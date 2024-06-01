@@ -1,0 +1,79 @@
+//www.elegoo.com
+// This Arduino file plays Mary Had a Little Lamb. It also outputs diffent colors based on the notes. 
+//I have to assign the notes individually at this point. I would improve it by making it systematically
+//apply the colors based on the  frequency listed in the pitches header file.
+
+#include "pitches.h"
+
+// Define Pins
+#define BLUE 3
+#define GREEN 5
+#define RED 6
+
+// notes in the melody:
+int melody[] = {
+  NOTE_E4, NOTE_D4, NOTE_C4, NOTE_D4, NOTE_E4, NOTE_E4, NOTE_E4, NOTE_D4, NOTE_D4, NOTE_D4, NOTE_E4, NOTE_G4, NOTE_G4, NOTE_E4, NOTE_D4, NOTE_C4, NOTE_D4, NOTE_E4, NOTE_E4, NOTE_E4, NOTE_E4, NOTE_D4, NOTE_D4, NOTE_E4, NOTE_D4, NOTE_C4
+};
+
+int duration = 500;  // 500 milliseconds
+
+void setup() {
+  pinMode(RED, OUTPUT);
+  pinMode(GREEN, OUTPUT);
+  pinMode(BLUE, OUTPUT);
+  digitalWrite(RED, HIGH);
+  digitalWrite(GREEN, LOW);
+  digitalWrite(BLUE, LOW);
+}
+
+void loop() {
+  #define delayTime 10 // fading time between colors
+
+  int redValue;
+  int greenValue;
+  int blueValue;
+
+  for (int thisNote = 0; thisNote < 26; thisNote++) {
+    int noteFrequency = melody[thisNote];
+
+    // Map the frequency of the note to a color intensity value (0-255)
+    int intensity = map(noteFrequency, NOTE_B0, NOTE_DS8, 0, 255);
+    
+    // Assign colors based on note positions in the scale
+    if (noteFrequency == NOTE_E4) {
+      redValue = intensity;
+      greenValue = 0;
+      blueValue = 0;
+    } else if (noteFrequency == NOTE_D4) {
+      redValue = 0;
+      greenValue = intensity;
+      blueValue = 0;
+    } else if (noteFrequency == NOTE_C4) {
+      redValue = 0;
+      greenValue = 0;
+      blueValue = intensity;
+    } else if (noteFrequency == NOTE_G4) {
+      redValue = intensity;
+      greenValue = intensity;
+      blueValue = 0;
+    } else {
+      redValue = intensity;
+      greenValue = intensity;
+      blueValue = intensity;
+    }
+
+    // Set the LED color
+    analogWrite(RED, redValue);
+    analogWrite(GREEN, greenValue);
+    analogWrite(BLUE, blueValue);
+
+    // Play the note
+    tone(8, noteFrequency, duration);
+
+    // Pause for the note's duration plus a little time for readability
+    delay(duration + 250);
+  }
+
+  // Restart after two seconds
+  delay(2000);
+}
